@@ -1,14 +1,17 @@
 // src/components/ProtectedRoute.jsx
-import { Navigate } from 'react-router-dom'
-
-const isAuthenticated = () => {
-  // Simple check: token or flag in localStorage
-  return localStorage.getItem('auth') === 'true'
-}
+import { Navigate } from "react-router-dom";
 
 export default function ProtectedRoute({ children }) {
+  const isAuthenticated = () => {
+    // Uses localStorage_flag set at login
+    return localStorage.getItem("auth") === "true";
+  };
+
+  // If not authenticated, redirect to login
   if (!isAuthenticated()) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/login" replace />;
   }
-  return children
+
+  // Otherwise allow access
+  return children;
 }

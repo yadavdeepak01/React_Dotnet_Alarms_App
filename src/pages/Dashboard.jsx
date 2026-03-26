@@ -17,38 +17,42 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  // Load Excel based on active tab
+  // Load data on active tab
   useEffect(() => {
-    let cancelled = false
+  let cancelled = false;
 
-    async function loadWorkbook(url) {
-      setLoading(true); setError('')
-      try {
-        const res = await fetch(url)
-        if (!res.ok) throw new Error(`HTTP ${res.status} while loading ${url}`)
+  async function loadData() {
+    setLoading(true);
+    setError("");
 
-        const ab = await res.arrayBuffer()
-        const wb = XLSX.read(ab, { type: 'array' })
-        const ws = wb.Sheets[wb.SheetNames[0]]
-        const data = XLSX.utils.sheet_to_json(ws, { defval: '', raw: true })
+    try {
+      const apiUrl =
+        active === "raw"
+          ? "http://localhost:5030/api/alarm/raw"
+          : "http://localhost:5030/api/alarm/configured";
 
-        if (!cancelled) {
-          setRows(data)
-          setCols(data.length ? Object.keys(data[0]) : [])
-        }
-      } catch (e) {
-        if (!cancelled) {
-          setError(e?.message || 'Failed to read Excel file')
-          setRows([]); setCols([])
-        }
-      } finally {
-        if (!cancelled) setLoading(false)
+      const res = await fetch(apiUrl);
+
+      if (!res.ok) throw new Error("Failed to load data");
+
+      const json = await res.json();
+
+      if (!cancelled) {
+        setRows(json);
+        setCols(json.length ? Object.keys(json[0]) : []);
       }
+    } catch (e) {
+      if (!cancelled) {
+        setError(e.message || "Failed to fetch");
+      }
+    } finally {
+      if (!cancelled) setLoading(false);
     }
+  }
 
-    loadWorkbook(FILES[active])
-    return () => { cancelled = true }
-  }, [active])
+  loadData();
+  return () => (cancelled = true);
+}, [active]);
 
   // 🔒 Logout handler
   const handleLogout = () => {
@@ -94,7 +98,7 @@ export default function Dashboard() {
           <table className="table">
             <thead>
               <tr>
-                {cols.map((c) => <th key={c}>{c}</th>)}
+                {cols.map((c) => <th key={c}>{c.toUpperCase()}</th>)}
               </tr>
             </thead>
             <tbody>

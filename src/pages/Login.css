@@ -2,9 +2,9 @@
 
 .login-page {
   min-height: 100vh;
-  background: url('/Schneider-Electric-Social.png') center/cover no-repeat fixed;
+  background: url('/bg.jpg') center/cover no-repeat fixed;
   display: grid;
-  justify-content:right;
+  justify-content:center;
   padding-right: 5%;
   place-items: center;
 }
