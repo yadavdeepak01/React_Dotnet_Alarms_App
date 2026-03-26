@@ -118,4 +118,3 @@
 10. Integrating React with Backend
     React uses fetch() to call your backend endpoints for login and alarm dashboard.
 
-
